@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도짜장 — ARCHIVE</title>
+    <style>
+        :root {
+            --bg-base: #f1ebf7;
+            --aurora-purple: rgba(186, 148, 232, 0.35);
+            --aurora-green: rgba(162, 218, 185, 0.35);
+            --glass-bg: rgba(255, 255, 255, 0.68);
+            --glass-border: rgba(255, 255, 255, 0.95);
+            --text-main: #1e1927;
+            --text-sub: #585066;
+            --text-muted: #8d859b;
+            --purple-point: #6b3ba7;
+            --purple-soft: rgba(107, 59, 167, 0.08);
+            --green-point: #2b7045;
+            --green-soft: rgba(43, 112, 69, 0.08);
+            --radius-main: 28px;
+            --shadow-soft: 0 16px 40px rgba(45, 30, 65, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px 120px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 오로라 그래디언트 배경 효과 */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .aurora-blob {
+            position: absolute;
+            filter: blur(90px);
+            border-radius: 50%;
+            opacity: 0.85;
+        }
+
+        .blob-1 {
+            width: 380px;
+            height: 380px;
+            background: var(--aurora-purple);
+            top: -60px;
+            left: -60px;
+        }
+
+        .blob-2 {
+            width: 420px;
+            height: 420px;
+            background: var(--aurora-green);
+            bottom: -80px;
+            right: -80px;
+        }
+
+        /* 메인 레이아웃 컨테이너 */
+        .app-container {
+            width: 100%;
+            max-width: 620px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* 1. 최상단 미니멀 타이틀 헤더 */
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .brand-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sparkle-svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--purple-point);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 5px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--green-point);
+            box-shadow: 0 0 8px var(--green-point);
+        }
+
+        /* 2. 폴라로이드 스타일 프로필 카드 */
+        .profile-polaroid {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-main);
+            padding: 28px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .polaroid-top {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .polaroid-top {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .photo-frame {
+            position: relative;
+            flex-shrink: 0;
+            transform: rotate(-2.5deg);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-frame:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .photo-img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 22px;
+            background: #fff;
+            padding: 6px;
+            box-shadow: 0 10px 25px rgba(50, 30, 80, 0.12);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .sticker-tag {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #1e1927;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .user-name {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .user-bio {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .color-pills {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .color-pills { justify-content: center; }
+        }
+
+        .color-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .color-badge.purple { background: var(--purple-soft); color: var(--purple-point); }
+        .color-badge.green { background: var(--green-soft); color: var(--green-point); }
+
+        .polaroid-bottom-text {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 0.84rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        /* 3. 섹션 레이아웃 스펙 (카드가 아닌 부드러운 그룹) */
+        .content-group {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-main);
+            padding: 26px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .group-header {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 입체 버블 칩 스타일 */
+        .bubble-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bubble-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .bubble-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .bubble-chip {
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 14px;
+            padding: 7px 14px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(90, 70, 120, 0.04);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .bubble-chip:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 18px rgba(107, 59, 167, 0.12);
+            color: var(--purple-point);
+        }
+
+        .bubble-note {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 4. 2열 스플릿 레이아웃 (FAVORITE & PLAY STYLE) */
+        .split-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 580px) {
+            .split-container { grid-template-columns: 1fr; }
+        }
+
+        .info-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .info-key {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        /* 5. 체크리스트 노티스 */
+        .notice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.84rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .notice-sparkle {
+            width: 15px;
+            height: 15px;
+            fill: var(--purple-point);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* 6. 화면 하단 플로팅 스마트 도크 (Floating Dock Bar) */
+        .dock-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            border-radius: 40px;
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 16px 36px rgba(35, 20, 50, 0.12);
+            z-index: 100;
+            width: calc(100% - 40px);
+            max-width: 420px;
+        }
+
+        .dock-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .dock-btn:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(107, 59, 167, 0.1);
+            color: var(--purple-point);
+        }
+
+        .dock-icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .copyright-text {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 오로라 배경 오버레이 -->
+    <div class="aurora-bg">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+    </div>
+
+    <!-- 앱 스코프 컨테이너 -->
+    <div class="app-container">
+
+        <!-- 상단 서브 헤더 -->
+        <header class="brand-header">
+            <div class="brand-title">
+                <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                DO_JJAJANG ARCHIVE
+            </div>
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>OPEN</span>
+            </div>
+        </header>
+
+        <!-- 00 / POLAROID PROFILE HERO -->
+        <section class="profile-polaroid">
+            <div class="polaroid-top">
+                <div class="photo-frame">
+                    <img src="https://raw.githubusercontent.com/dfndj3872/anything/refs/heads/main/Screenshot_20260714_014032_!!.jpg" alt="도짜장 프로필" class="photo-img">
+                    <div class="sticker-tag">
+                        <svg class="sparkle-svg" viewBox="0 0 24 24" style="width:10px; height:10px; fill:#fff;"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                        ON
+                    </div>
+                </div>
+                <div class="profile-meta">
+                    <h1 class="user-name">도짜장</h1>
+                    <p class="user-bio">성인 · 메인 장르: 앙스타, 그림</p>
+                    <div class="color-pills">
+                        <span class="color-badge purple">PURPLE</span>
+                        <span class="color-badge green">GREEN</span>
+                    </div>
+                </div>
+            </div>
+            <div class="polaroid-bottom-text">
+                <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                <span>리듬게임을 사랑합니다. 거의 대부분 해봄</span>
+            </div>
+        </section>
+
+        <!-- 01 / SUB GENRES (BUBBLE CHIPS) -->
+        <section class="content-group">
+            <div class="group-header">
+                <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                01 / SUB GENRES
+            </div>
+
+            <div class="bubble-section">
+                <div class="bubble-title">Rhythm Game</div>
+                <div class="bubble-wrap">
+                    <span class="bubble-chip">프세카</span>
+                    <span class="bubble-chip">뱅드림</span>
+                </div>
+            </div>
+
+            <div class="bubble-section" style="margin-top: 6px;">
+                <div class="bubble-title">Sub Game</div>
+                <div class="bubble-wrap">
+                    <span class="bubble-chip">원신</span>
+                    <span class="bubble-chip">붕스</span>
+                    <span class="bubble-chip">명조</span>
+                    <span class="bubble-chip">림버스컴퍼니</span>
+                    <span class="bubble-chip">리버스1999</span>
+                    <span class="bubble-chip">니케</span>
+                </div>
+            </div>
+
+            <div class="bubble-section" style="margin-top: 6px;">
+                <div class="bubble-title">Virtual / Anime</div>
+                <div class="bubble-wrap">
+                    <span class="bubble-chip">스코시즘</span>
+                    <span class="bubble-chip">리레</span>
+                    <span class="bubble-chip">싸이코드</span>
+                    <span class="bubble-chip">포더모어</span>
+                    <span class="bubble-chip">원오즈</span>
+                    <span class="bubble-chip">레벨리오</span>
+                    <span class="bubble-chip">셀리브</span>
+                    <span class="bubble-chip">에델리안</span>
+                    <span class="bubble-chip">애니</span>
+                    <span class="bubble-chip">플레이브</span>
+                </div>
+                <div class="bubble-note">(구분 없이 다 좋아합니다)</div>
+            </div>
+        </section>
+
+        <!-- 02 & 03 / SPLIT INFO (FAVORITE & PLAY STYLE) -->
+        <div class="split-container">
+            
+            <section class="content-group">
+                <div class="group-header">
+                    <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    02 / FAVORITE
+                </div>
+                <div class="info-rows">
+                    <div class="info-row">
+                        <span class="info-key">앙스타</span>
+                        <span class="info-value">메인 선호</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">오시</span>
+                        <span class="info-value">마요이, 시노부</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">차애</span>
+                        <span class="info-value">이즈미, 이부키, 하지메</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">유닛</span>
+                        <span class="info-value">라빗츠, 에스프리</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-group">
+                <div class="group-header">
+                    <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    03 / PLAY STYLE
+                </div>
+                <div class="info-rows">
+                    <div class="info-row">
+                        <span class="info-key">활동</span>
+                        <span class="info-value">소비 / 연성 / 게임</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">탐라</span>
+                        <span class="info-value">알티, 마음 위주 / 혼잣말 및 욕설 언급</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">소통</span>
+                        <span class="info-value">예의 지켜주시면 멘션, DM 모두 가능</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">타장르</span>
+                        <span class="info-value">앙스타 위주 (가끔 언급)</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 04 / PLEASE CHECK -->
+        <section class="content-group">
+            <div class="group-header">
+                <svg class="sparkle-svg" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                04 / PLEASE CHECK
+            </div>
+            <div class="notice-list">
+                <div class="notice-item">
+                    <svg class="notice-sparkle" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    <span>선동의 후 반모 환영합니다 (선멘 반말 불호).</span>
+                </div>
+                <div class="notice-item">
+                    <svg class="notice-sparkle" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    <span>주인장 평소 욕설 X (가끔 사용 가능성 O).</span>
+                </div>
+                <div class="notice-item">
+                    <svg class="notice-sparkle" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    <span>욕설 사용은 괜찮으나 무례함 및 예의 없는 행동은 받지 않습니다.</span>
+                </div>
+                <div class="notice-item">
+                    <svg class="notice-sparkle" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    <span>굿즈 및 소비 액수로 애정도를 판단하시는 분은 받지 않습니다.</span>
+                </div>
+                <div class="notice-item">
+                    <svg class="notice-sparkle" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+                    <span>악개, 예의 없는 분은 피하며 이별은 블언블을 선호합니다.</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="copyright-text">
+            © DO_JJAJANG ALL RIGHTS RESERVED.
+        </div>
+
+    </div>
+
+    <!-- 하단 플로팅 도크 링크 바 -->
+    <nav class="dock-bar">
+        <a href="https://asked.kr/purplejun_72" target="_blank" class="dock-btn">
+            <svg class="dock-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Asked</span>
+        </a>
+        <a href="https://x.com" target="_blank" class="dock-btn">
+            <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <span>X (Twitter)</span>
+        </a>
+    </nav>
+
+</body>
+</html>
